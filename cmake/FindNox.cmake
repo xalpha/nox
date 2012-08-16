@@ -36,12 +36,12 @@ find_path( Nox_INCLUDE_DIR
         /usr/include
         /usr/local/include
         /opt/include
-        /opt/local/install
+        /opt/local/include
     PATH_SUFFIXES
         nox )
 
 # check if this is a valid component
-if( TARGET ${Nox_INCLUDE_DIR} )
+if( Nox_INCLUDE_DIR )
     # include the component
     MESSAGE( STATUS "Nox found.")
 else()

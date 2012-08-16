@@ -1,34 +1,42 @@
  ///////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-// This file is part of nyx, a lightweight C++ template visualization library //
+// This file is part of nox, a lightweight C++ template visualization library //
 //                                                                            //
 // Copyright (C) 2010, 2011 Alexandru Duliu                                   //
 //                                                                            //
-// nyx is free software; you can redistribute it and/or                       //
+// nox is free software; you can redistribute it and/or                       //
 // modify it under the terms of the GNU Lesser General Public                 //
 // License as published by the Free Software Foundation; either               //
 // version 3 of the License, or (at your option) any later version.           //
 //                                                                            //
-// nyx is distributed in the hope that it will be useful, but WITHOUT ANY     //
+// nox is distributed in the hope that it will be useful, but WITHOUT ANY     //
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS  //
 // FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the //
 // GNU General Public License for more details.                               //
 //                                                                            //
 // You should have received a copy of the GNU Lesser General Public           //
-// License along with nyx. If not, see <http://www.gnu.org/licenses/>.        //
+// License along with nox. If not, see <http://www.gnu.org/licenses/>.        //
 //                                                                            //
 ///////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <eigen3/Eigen/Core>
+#include <nyx/gl.hpp>
+
+/*
+ *  widget.hpp
+ *
+ *  Created on: Aug 16, 2010
+ *      Author: alex
+ */
 
 
 namespace nox
 {
 
 template <typename T>
-class Widget
+class widget
 {
 public:
     typedef Eigen::Matrix<T,3,1> Vector3;
@@ -37,16 +45,16 @@ public:
 public:
     enum MouseButton{ NoButton, LeftButton, RightButton, MiddleButton, X1Button, X2Button };
 
-    Widget()
+    widget()
     {
         // mouse handling
         m_mouseX=0;
         m_mouseY=0;
         m_mouseButton = Widget::NoButton;
 
-        view_transform(0) = static_cast<T>(0.0); // elevation
-        view_transform(1) = static_cast<T>(0.0); // azimuth
-        view_transform(2) = static_cast<T>(-1.5); // zoom
+        m_view_transform(0) = static_cast<T>(0.0); // elevation
+        m_view_transform(1) = static_cast<T>(0.0); // azimuth
+        m_view_transform(2) = static_cast<T>(-1.5); // zoom
 
         m_center = Eigen::Vector3f::Zero();
 
@@ -64,7 +72,7 @@ public:
     }
 
 
-    virtual ~Widget();
+    virtual ~widget(){}
 
     virtual void initialize()
     {
@@ -108,12 +116,12 @@ public:
         {
             case Widget::LeftButton :
                 // Update Azimuth & Elevation
-                view_transform(0) += dy/static_cast<T>(5.0);
-                view_transform(1) += dx/static_cast<T>(5.0);
+                m_view_transform(0) += dy/static_cast<T>(5.0);
+                m_view_transform(1) += dx/static_cast<T>(5.0);
 
                 // predevent big values
-                view_transform[0] = fmod(view_transform(0),static_cast<T>(36000.0));
-                view_transform[1] = fmod(view_transform(1),static_cast<T>(36000.0));
+                m_view_transform[0] = fmod(m_view_transform(0),static_cast<T>(36000.0));
+                m_view_transform[1] = fmod(m_view_transform(1),static_cast<T>(36000.0));
                 break;
 
             case Widget::RightButton :
@@ -121,10 +129,10 @@ public:
                 float  dist = dy/static_cast<T>(50.0);
 
                 // make zoom logarithmic
-                dist *= log((fabs(view_transform(2)/static_cast<T>(10.0))+static_cast<T>(1.0)));
+                dist *= log((fabs(m_view_transform(2)/static_cast<T>(10.0))+static_cast<T>(1.0)));
 
                 // update global zoom
-                view_transform(2)  += dist;
+                m_view_transform(2)  += dist;
                 break;
         }
 
@@ -166,10 +174,10 @@ protected:
         // set modelview
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        gl::Translate( 0, 0, zoom);	// Zoom
-        gl::Rotate(elevation,1,0,0);	// rotate elevation
-        gl::Rotate(azimuth,0,1,0);	// rotate azimuth
-        gl::MultMatrix( m_mv.data() );
+        nyx::gl::Translate( 0, 0, zoom);	// Zoom
+        nyx::gl::Rotate(elevation,1,0,0);	// rotate elevation
+        nyx::gl::Rotate(azimuth,0,1,0);	// rotate azimuth
+        nyx::gl::MultMatrix( m_mv.data() );
 
         //gl::Translate( -m_center(0), -m_center(1), -m_center(2) );
     }
@@ -203,7 +211,7 @@ protected:
         m[2][3] = static_cast<T>(-1);
         m[3][2] = static_cast<T>(-2 * zNear * zFar / deltaZ);
         m[3][3] = static_cast<T>(0);
-        gl::MultMatrix(&m[0][0]);
+        nyx::gl::MultMatrix(&m[0][0]);
     }
 
 
@@ -216,7 +224,7 @@ protected:
                        static_cast<T>(1000.0) );
 
         // set modelview
-        setModelview( view_transform(1), view_transform(0), view_transform(2) );
+        setModelview( m_view_transform(1), m_view_transform(0), m_view_transform(2) );
     }
 
 protected:
@@ -227,12 +235,12 @@ protected:
     int m_mouseX;
     int m_mouseY;
     int m_mouseButton;
-    Vector3 view_transform; // elevation, azimutz, zoom
+    Vector3 m_view_transform; // elevation, azimutz, zoom
     Vector3 m_center; // center of rotation
     Matrix4 m_mv; // modelview matrix
 
     // default colors
-    Vector3 m_baseColor[3];
+    Vector3 m_baseColor;
 };
 
 } // namespace nyx

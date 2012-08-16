@@ -31,7 +31,9 @@ endif()
 include( NoxConfig.cmake )
 
 # add the include files
-list( APPEND Nox_INC include/nox/widget.hpp )
+list( APPEND Nox_INC
+    include/nox/vis.hpp
+    include/nox/widget.hpp )
 
 # set include directories
 include_directories( ${Nox_INCLUDE_DIRS} )

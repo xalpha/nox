@@ -47,14 +47,16 @@ if( WIN32 )
     list( APPEND Nox_LINK_FLAGS " /MANIFEST:NO" )
 endif()
 
-# find Eigen3
+# find dependencies
 find_package( Eigen3 REQUIRED )
+find_package( Nyx REQUIRED )
 
 # set include directories
 set( Nox_INCLUDE_DIRS
     ${Nox_INCLUDE_DIR}
     ${Nox_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR} CACHE INTERNAL "all include directories nox needs" )
+    ${EIGEN3_INCLUDE_DIR}
+    ${Nyx_INCLUDE_DIRS} CACHE INTERNAL "all include directories nox needs" )
 
 # link libraries
 set( Nox_LIBRARIES ${NYX_LIBRARIRES} CACHE INTERNAL "all libs nox needs" )
