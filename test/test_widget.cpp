@@ -56,7 +56,7 @@ public:
 
         // draw teapot
         glColor3f(1,1,1);
-        glutSolidTeapot( 2 );
+        glutSolidTeapot( 1 );
 
         // update buffer
         glutSwapBuffers();
@@ -75,11 +75,17 @@ static test_widget<float> s_test_widget;
 ///
 void idlefunc(void){ glutPostRedisplay(); }
 void reshapefunc(int width,int height){ s_test_widget.handleResize( width, height ); }
-void mousefunc(int button,int state,int x,int y){ s_test_widget.handleMousePress( x,y,button ); }
 void motionfunc(int x,int y){ s_test_widget.handleMouseMove( x,y ); }
 void keyboardfunc(unsigned char key,int x,int y){ s_test_widget.handleKeyboard( key ); }
 void displayfunc(){ s_test_widget.draw(); }
-
+void mousefunc(int button,int state,int x,int y)
+{
+    switch( button )
+    {
+        case GLUT_LEFT_BUTTON : s_test_widget.handleMousePress( x,y,test_widget<float>::LeftButton ); break;
+        case GLUT_RIGHT_BUTTON : s_test_widget.handleMousePress( x,y,test_widget<float>::RightButton ); break;
+    }
+}
 
 int main( int argc, char** argv )
 {

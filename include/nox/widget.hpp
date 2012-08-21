@@ -62,15 +62,10 @@ public:
 
         // setup the rotation matrix
         m_mv = Matrix4::Identity();
-        // rotate 90 deg around x
-        m_mv(1,1) = 0;
-        m_mv(2,2) = 0;
-        m_mv(2,1) =-1;
-        m_mv(1,2) = 1;
 
-        m_baseColor(0) = static_cast<T>(0.5);
-        m_baseColor(1) = static_cast<T>(0.5);
-        m_baseColor(2) = static_cast<T>(0.5);
+        m_baseColor(0) = static_cast<T>(0);
+        m_baseColor(1) = static_cast<T>(0);
+        m_baseColor(2) = static_cast<T>(0);
     }
 
 
@@ -182,8 +177,7 @@ protected:
         nyx::gl::Rotate(elevation,one,zero,zero);	// rotate elevation
         nyx::gl::Rotate(azimuth,zero,one,zero);	// rotate azimuth
         nyx::gl::MultMatrix( m_mv.data() );
-
-        //gl::Translate( -m_center(0), -m_center(1), -m_center(2) );
+        nyx::gl::Translate( -m_center(0), -m_center(1), -m_center(2) );
     }
 
     void setProjection( T fovy, T aspect, T zNear, T zFar )
@@ -193,29 +187,23 @@ protected:
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        double m[4][4];
-        double sine, cotangent, deltaZ;
+        Eigen::Matrix4d m = Eigen::Matrix4d::Zero();
         double radians = static_cast<double>(fovy) / 2.0 * 3.1415926535897932384626433 / 180.0;
-
-        deltaZ = static_cast<double>(zFar - zNear);
-        sine = sin(radians);
+        double deltaZ = static_cast<double>(zFar - zNear);
+        double sine = sin(radians);
         if ((deltaZ == 0) || (sine == 0) || (aspect == 0))
         {
             return;
         }
-        cotangent = cos(radians) / sine;
+        double cotangent = cos(radians) / sine;
 
-        for( int i=0; i<4; i++ )
-            for( int j=0; j<4; j++ )
-                m[0][0] = 0.0;
-
-        m[0][0] = static_cast<T>(cotangent / aspect);
-        m[1][1] = static_cast<T>(cotangent);
-        m[2][2] = static_cast<T>(-(zFar + zNear) / deltaZ);
-        m[2][3] = static_cast<T>(-1);
-        m[3][2] = static_cast<T>(-2 * zNear * zFar / deltaZ);
-        m[3][3] = static_cast<T>(0);
-        nyx::gl::MultMatrix(&m[0][0]);
+        m(0,0) = cotangent / static_cast<double>(aspect);
+        m(1,1) = cotangent;
+        m(2,2) = -static_cast<double>(zFar + zNear) / deltaZ;
+        m(3,2) = -1;
+        m(2,3) = -2 * static_cast<double>(zNear * zFar) / deltaZ;
+        m(3,3) = 0;
+        nyx::gl::MultMatrix( m.data() );
     }
 
 
