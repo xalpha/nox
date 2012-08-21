@@ -90,9 +90,6 @@ public:
         nyx::gl::learColor( m_baseColor(0), m_baseColor(1), m_baseColor(2), 1 );
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // draw background
-        drawBackground();
-
         // set the mvp matrix
         setCameraView();
 
