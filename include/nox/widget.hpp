@@ -21,7 +21,9 @@
 
 #pragma once
 
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
+
+#define NYX_USE_EIGEN
 #include <nyx/gl.hpp>
 
 /*
@@ -50,25 +52,20 @@ public:
         // mouse handling
         m_mouseX=0;
         m_mouseY=0;
-        m_mouseButton = Widget::NoButton;
+        m_mouseButton = widget::NoButton;
 
         m_view_transform(0) = static_cast<T>(0.0); // elevation
         m_view_transform(1) = static_cast<T>(0.0); // azimuth
         m_view_transform(2) = static_cast<T>(-1.5); // zoom
 
-        m_center = Eigen::Vector3f::Zero();
+        m_center = Vector3::Zero();
 
         // setup the rotation matrix
-        m_mv = Eigen::Matrix4f::Identity();
-        // rotate 90 deg around x
-        m_mv(1,1) = 0;
-        m_mv(2,2) = 0;
-        m_mv(2,1) =-1;
-        m_mv(1,2) = 1;
+        m_mv = Matrix4::Identity();
 
-        m_baseColor(0) = static_cast<T>(0.5);
-        m_baseColor(1) = static_cast<T>(0.5);
-        m_baseColor(2) = static_cast<T>(0.5);
+        m_baseColor(0) = static_cast<T>(0);
+        m_baseColor(1) = static_cast<T>(0);
+        m_baseColor(2) = static_cast<T>(0);
     }
 
 
@@ -114,7 +111,7 @@ public:
 
         switch( m_mouseButton )
         {
-            case Widget::LeftButton :
+            case widget::LeftButton :
                 // Update Azimuth & Elevation
                 m_view_transform(0) += dy/static_cast<T>(5.0);
                 m_view_transform(1) += dx/static_cast<T>(5.0);
@@ -124,7 +121,7 @@ public:
                 m_view_transform[1] = fmod(m_view_transform(1),static_cast<T>(36000.0));
                 break;
 
-            case Widget::RightButton :
+            case widget::RightButton :
                 // Calculate relativ zoom
                 float  dist = dy/static_cast<T>(50.0);
 
@@ -141,7 +138,7 @@ public:
     }
 
 
-    virtual void handleKeyboard()
+    virtual void handleKeyboard( unsigned char key )
     {
         // no default behaviour
     }
@@ -172,14 +169,15 @@ protected:
     void setModelview( T azimuth, T elevation, T zoom )
     {
         // set modelview
+        const T one = 1;
+        const T zero = 0;
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        nyx::gl::Translate( 0, 0, zoom);	// Zoom
-        nyx::gl::Rotate(elevation,1,0,0);	// rotate elevation
-        nyx::gl::Rotate(azimuth,0,1,0);	// rotate azimuth
+        nyx::gl::Translate( zero, zero, zoom);	// Zoom
+        nyx::gl::Rotate(elevation,one,zero,zero);	// rotate elevation
+        nyx::gl::Rotate(azimuth,zero,one,zero);	// rotate azimuth
         nyx::gl::MultMatrix( m_mv.data() );
-
-        //gl::Translate( -m_center(0), -m_center(1), -m_center(2) );
+        nyx::gl::Translate( -m_center(0), -m_center(1), -m_center(2) );
     }
 
     void setProjection( T fovy, T aspect, T zNear, T zFar )
@@ -189,29 +187,23 @@ protected:
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        double m[4][4];
-        double sine, cotangent, deltaZ;
+        Eigen::Matrix4d m = Eigen::Matrix4d::Zero();
         double radians = static_cast<double>(fovy) / 2.0 * 3.1415926535897932384626433 / 180.0;
-
-        deltaZ = static_cast<double>(zFar - zNear);
-        sine = sin(radians);
+        double deltaZ = static_cast<double>(zFar - zNear);
+        double sine = sin(radians);
         if ((deltaZ == 0) || (sine == 0) || (aspect == 0))
         {
             return;
         }
-        cotangent = cos(radians) / sine;
+        double cotangent = cos(radians) / sine;
 
-        for( int i=0; i<4; i++ )
-            for( int j=0; j<4; j++ )
-                m[0][0] = 0.0;
-
-        m[0][0] = static_cast<T>(cotangent / aspect);
-        m[1][1] = static_cast<T>(cotangent);
-        m[2][2] = static_cast<T>(-(zFar + zNear) / deltaZ);
-        m[2][3] = static_cast<T>(-1);
-        m[3][2] = static_cast<T>(-2 * zNear * zFar / deltaZ);
-        m[3][3] = static_cast<T>(0);
-        nyx::gl::MultMatrix(&m[0][0]);
+        m(0,0) = cotangent / static_cast<double>(aspect);
+        m(1,1) = cotangent;
+        m(2,2) = -static_cast<double>(zFar + zNear) / deltaZ;
+        m(2,3) = -2 * static_cast<double>(zNear * zFar) / deltaZ;
+        m(3,2) = -1;
+        m(3,3) = 0;
+        nyx::gl::MultMatrix( m.data() );
     }
 
 

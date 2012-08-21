@@ -87,11 +87,11 @@ public:
     void draw()
     {
         // clear buffer
-        nyx::gl::learColor( m_baseColor(0), m_baseColor(1), m_baseColor(2), 1 );
+        nyx::gl::ClearColor( m_baseColor(0), m_baseColor(1), m_baseColor(2), 1 );
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // set the mvp matrix
-        setCameraView();
+        setView();
 
         // draw one big CS smack in the origin
         glLineWidth( 2.0f );
