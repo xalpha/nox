@@ -21,7 +21,9 @@
 
 #pragma once
 
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
+
+#define NYX_USE_EIGEN
 #include <nyx/gl.hpp>
 
 /*
@@ -50,16 +52,16 @@ public:
         // mouse handling
         m_mouseX=0;
         m_mouseY=0;
-        m_mouseButton = Widget::NoButton;
+        m_mouseButton = widget::NoButton;
 
         m_view_transform(0) = static_cast<T>(0.0); // elevation
         m_view_transform(1) = static_cast<T>(0.0); // azimuth
         m_view_transform(2) = static_cast<T>(-1.5); // zoom
 
-        m_center = Eigen::Vector3f::Zero();
+        m_center = Vector3::Zero();
 
         // setup the rotation matrix
-        m_mv = Eigen::Matrix4f::Identity();
+        m_mv = Matrix4::Identity();
         // rotate 90 deg around x
         m_mv(1,1) = 0;
         m_mv(2,2) = 0;
@@ -114,7 +116,7 @@ public:
 
         switch( m_mouseButton )
         {
-            case Widget::LeftButton :
+            case widget::LeftButton :
                 // Update Azimuth & Elevation
                 m_view_transform(0) += dy/static_cast<T>(5.0);
                 m_view_transform(1) += dx/static_cast<T>(5.0);
@@ -124,7 +126,7 @@ public:
                 m_view_transform[1] = fmod(m_view_transform(1),static_cast<T>(36000.0));
                 break;
 
-            case Widget::RightButton :
+            case widget::RightButton :
                 // Calculate relativ zoom
                 float  dist = dy/static_cast<T>(50.0);
 
@@ -141,7 +143,7 @@ public:
     }
 
 
-    virtual void handleKeyboard()
+    virtual void handleKeyboard( unsigned char key )
     {
         // no default behaviour
     }
@@ -172,11 +174,13 @@ protected:
     void setModelview( T azimuth, T elevation, T zoom )
     {
         // set modelview
+        const T one = 1;
+        const T zero = 0;
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        nyx::gl::Translate( 0, 0, zoom);	// Zoom
-        nyx::gl::Rotate(elevation,1,0,0);	// rotate elevation
-        nyx::gl::Rotate(azimuth,0,1,0);	// rotate azimuth
+        nyx::gl::Translate( one, one, zoom);	// Zoom
+        nyx::gl::Rotate(elevation,one,zero,zero);	// rotate elevation
+        nyx::gl::Rotate(azimuth,zero,one,zero);	// rotate azimuth
         nyx::gl::MultMatrix( m_mv.data() );
 
         //gl::Translate( -m_center(0), -m_center(1), -m_center(2) );

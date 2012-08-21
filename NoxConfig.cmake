@@ -40,7 +40,7 @@ set( Nox_INCLUDE_DIR "${Nox_DIR}/include")
 set( Nox_TARGET nox )
 
 # set compile definitions
-set( Nox_COMPILE_DEFINITIONS NOX CACHE INTERNAL "all compile definitions nox needs"  )
+set( Nox_COMPILE_DEFINITIONS NOX NYX_USE_EIGEN CACHE INTERNAL "all compile definitions nox needs"  )
 
 # set linker flags
 if( WIN32 )
@@ -49,6 +49,7 @@ endif()
 
 # find dependencies
 find_package( Eigen3 REQUIRED )
+find_package( GLEW REQUIRED )
 find_package( Nyx REQUIRED )
 
 # set include directories
@@ -56,10 +57,13 @@ set( Nox_INCLUDE_DIRS
     ${Nox_INCLUDE_DIR}
     ${Nox_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
+    ${GLEW_INCLUDE_PATH}
     ${Nyx_INCLUDE_DIRS} CACHE INTERNAL "all include directories nox needs" )
 
 # link libraries
-set( Nox_LIBRARIES ${NYX_LIBRARIRES} CACHE INTERNAL "all libs nox needs" )
+set( Nox_LIBRARIES 
+    ${GLEW_LIBRARY}
+    ${NYX_LIBRARIRES} CACHE INTERNAL "all libs nox needs" )
 
 # enable C++11 support
 #if( NOT WIN32 )

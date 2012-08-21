@@ -19,31 +19,29 @@
 #                                                                            #
 ##############################################################################
 
-cmake_minimum_required(VERSION 2.8)
-project(Nox)
+# find glut
+find_package( GLUT QUIET )
 
-# guard against in-source builds
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there. You may need to remove CMakeCache.txt. ")
+# if GLUT found
+if( GLUT_FOUND )
+
+    # set include directories
+    include_directories( ${Nox_INCLUDE_DIRS} ${GLUT_INCLUDE_DIR} )
+
+    # add test for widget
+    set( Nox_Test_widget test_widget )
+    add_executable( ${Nox_Test_widget} test_widget.cpp )
+    target_link_libraries( ${Nox_Test_widget} -lm -lc -Wall ${Nox_LIBRARIES} ${GLUT_LIBRARIES} )
+    add_test( ${Nox_Test_widget} ${Nox_Test_widget} )
+
+    # add test for plot
+    #set( Nox_Test_plot test_plot )
+    #add_executable( ${Nox_Test_plot} test_plot.cpp )
+    #target_link_libraries( ${Nox_Test_plot} -lm -lc -Wall ${Nox_LINK_LIBRARIES} )
+    #add_test( ${Nox_Test_plot} ${Nox_Test_plot} )
+
+elseif()
+    message( WARNING "GLUT not found, tests disabled." )
 endif()
 
-# configure the project
-include( NoxConfig.cmake )
 
-# add the include files
-list( APPEND Nox_INC
-    include/nox/vis.hpp
-    include/nox/widget.hpp )
-
-# set include directories
-include_directories( ${Nox_INCLUDE_DIRS} )
-
-# add the target
-add_custom_target( ${Nox_TARGET} SOURCES ${Nox_INC} )
-
-# install
-install(FILES ${Nox_INC} DESTINATION "include/nox" )
-install(FILES "${CMAKE_CURRENT_LIST_DIR}/cmake/FindNox.cmake" DESTINATION share )
-
-# test
-add_subdirectory( test )
