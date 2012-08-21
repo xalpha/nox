@@ -41,7 +41,7 @@
 // Instances
 ///
 static nox::vis<float> s_vis;
-static size_t count = 10000;
+static size_t count = 1000;
 
 
 /////
@@ -138,7 +138,7 @@ int main( int argc, char** argv )
     glutInitWindowSize(800,600);
 
     // Requests a double RGB-framebuffer with depth- and stencil-buffer
-    glutInitDisplayMode( GLUT_DOUBLE| GLUT_RGBA| GLUT_DEPTH );
+    glutInitDisplayMode( GLUT_MULTISAMPLE| GLUT_RGBA| GLUT_DEPTH );
 
     // Creates the window.
     glutCreateWindow( "nox: test vis" );
