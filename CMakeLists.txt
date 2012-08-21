@@ -33,7 +33,6 @@ if( NOT WIN32 )
     set( BUILD_SHARED_LIBS TRUE )
 endif()
 
-
 # configure the project
 include( NoxConfig.cmake )
 
@@ -53,4 +52,5 @@ install(FILES ${Nox_INC} DESTINATION "include/nox" )
 install(FILES "${CMAKE_CURRENT_LIST_DIR}/cmake/FindNox.cmake" DESTINATION share )
 
 # test
+enable_testing()
 add_subdirectory( test )

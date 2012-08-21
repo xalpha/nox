@@ -50,7 +50,15 @@ endif()
 # find dependencies
 find_package( Eigen3 REQUIRED )
 find_package( GLEW REQUIRED )
-find_package( Nyx REQUIRED )
+
+# find nyx
+find_package( Nyx QUIET )
+if( NOT ${Nyx_FOUND} )
+    message(STATUS "Nyx not found, pulling from server...")
+    include(ExternalProject)
+    ExternalProject_Add(Nyx
+        GIT_REPOSITORY "https://github.com/xalpha/nyx.git" )
+endif()
 
 # set include directories
 set( Nox_INCLUDE_DIRS
