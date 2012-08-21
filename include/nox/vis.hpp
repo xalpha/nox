@@ -63,6 +63,9 @@ public:
         Orange  = 0x00000008,
         Black   = 0x00000010,
         Gray    = 0x00000020,
+        Yellow  = 0x00000040,
+        Magenta = 0x00000080,
+        Cyan    = 0x00000100,
         Alpha1  = 0x00001000,
         Alpha075= 0x00002000,
         Alpha05 = 0x00004000,
@@ -124,6 +127,34 @@ public:
         // draw all transformations
         for( BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
             it->draw();
+    }
+
+
+    template <typename R>
+    void plot( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags )
+    {
+        // init stuff
+        std::vector<T> pointsV;
+        std::vector<T> pointsC;
+
+        // color
+        Vector4 col = color( flags );
+
+        for( size_t i=0; i<points.size(); i++ )
+        {
+            float fac = 1.0f - 0.75f*( float(i)/float(points.size()) );
+
+            pointsV.push_back( static_cast<T>( points[i](0) ) );
+            pointsV.push_back( static_cast<T>( points[i](1) ) );
+            pointsV.push_back( static_cast<T>( points[i](2) ) );
+
+            pointsC.push_back( col(0) );
+            pointsC.push_back( col(1) );
+            pointsC.push_back( col(2) );
+            pointsC.push_back( col(3) * fac );
+        }
+
+        addGeometry( pointsV, pointsC, GL_POINTS );
     }
 
 
@@ -210,12 +241,15 @@ public:
 
         // get the color
         Vector4 col(0,0,0,a);
-        if( flags & Red )         col = Vector4f( 1,0,0,a );
-        else if( flags & Green )  col = Vector4f( 0,1,0,a );
-        else if( flags & Blue )   col = Vector4f( 0,0,1,a );
-        else if( flags & Orange ) col = Vector4f( 1,0.5,0,a );
-        else if( flags & Black )  col = Vector4f( 0,0,0,a );
-        else if( flags & Gray )   col = Vector4f( 0.5,0.5,0.5,a );
+        if( flags & Red )         col = Vector4( 1,0,0,a );
+        else if( flags & Green )  col = Vector4( 0,1,0,a );
+        else if( flags & Blue )   col = Vector4( 0,0,1,a );
+        else if( flags & Orange ) col = Vector4( 1,0.5,0,a );
+        else if( flags & Black )  col = Vector4( 0,0,0,a );
+        else if( flags & Gray )   col = Vector4( 0.5,0.5,0.5,a );
+        else if( flags & Yellow )  col = Vector4( 1,1,0,a );
+        else if( flags & Magenta )   col = Vector4( 1,0,1,a );
+        else if( flags & Cyan ) col = Vector4( 0,1,1,a );
 
         return col;
     }
