@@ -63,6 +63,9 @@ public:
         Orange  = 0x00000008,
         Black   = 0x00000010,
         Gray    = 0x00000020,
+        Yellow  = 0x00000040,
+        Magenta = 0x00000080,
+        Cyan    = 0x00000100,
         Alpha1  = 0x00001000,
         Alpha075= 0x00002000,
         Alpha05 = 0x00004000,
@@ -244,6 +247,9 @@ public:
         else if( flags & Orange ) col = Vector4( 1,0.5,0,a );
         else if( flags & Black )  col = Vector4( 0,0,0,a );
         else if( flags & Gray )   col = Vector4( 0.5,0.5,0.5,a );
+        else if( flags & Yellow )  col = Vector4( 1,1,0,a );
+        else if( flags & Magenta )   col = Vector4( 1,0,1,a );
+        else if( flags & Cyan ) col = Vector4( 0,1,1,a );
 
         return col;
     }

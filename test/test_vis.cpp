@@ -25,6 +25,8 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
+#include <Eigen/Geometry>
+
 #include <nox/vis.hpp>
 
 /*
@@ -39,7 +41,7 @@
 // Instances
 ///
 static nox::vis<float> s_vis;
-static size_t count = 1000;
+static size_t count = 10000;
 
 
 /////
@@ -72,6 +74,59 @@ void fuzzyCube( const Eigen::Vector3f& pos, float size, uint32_t flags )
 
     s_vis.plot( points, flags );
 }
+
+
+void fuzzyAffines()
+{
+    std::vector<Eigen::Matrix4f> trans;
+    trans.reserve(count/10);
+    for( size_t i=0; i<count/10; i++ )
+    {
+        Eigen::Vector3f x = Eigen::Vector3f::Random();
+        Eigen::Vector3f y = Eigen::Vector3f::Random();
+
+        x.normalize();
+        y.normalize();
+
+        Eigen::Vector3f z = x.cross(y);
+        z.normalize();
+
+        y = z.cross(x);
+        y.normalize();
+
+        Eigen::Affine3f t = Eigen::Affine3f::Identity();
+        Eigen::Matrix3f r = Eigen::Matrix3f::Identity();
+
+        r.col(0) = x;
+        r.col(1) = y;
+        r.col(2) = z;
+
+        t.rotate(r);
+        t.translate( 0.5f * Eigen::Vector3f::Random() + Eigen::Vector3f(0.5,0.5,0.5) );
+
+        trans.push_back( t.matrix() );
+    }
+
+    s_vis.plot( trans, nox::vis<float>::Black | nox::vis<float>::CS );
+}
+
+
+void alignedAffines()
+{
+    std::vector<Eigen::Matrix4f> trans;
+    trans.reserve(count);
+    for( size_t i=0; i<count; i++ )
+    {
+        Eigen::Affine3f t = Eigen::Affine3f::Identity();
+        t.rotate(Eigen::Matrix3f::Identity());
+        t.translate( 0.5f * Eigen::Vector3f::Random() + Eigen::Vector3f(0.5,0.5,0.5) );
+
+        trans.push_back( t.matrix() );
+    }
+
+    s_vis.plot( trans, nox::vis<float>::Black | nox::vis<float>::CS );
+}
+
 
 
 int main( int argc, char** argv )
@@ -108,10 +163,16 @@ int main( int argc, char** argv )
 
     // plot some stuff
     s_vis.initialize();
-    fuzzyCube( Eigen::Vector3f(0.25,0.25,0.25), 0.25, nox::vis<float>::Black );
-    fuzzyCube( Eigen::Vector3f(1.25,0.25,0.25), 0.25, nox::vis<float>::Red );
-    fuzzyCube( Eigen::Vector3f(0.25,1.25,0.25), 0.25, nox::vis<float>::Green );
-    fuzzyCube( Eigen::Vector3f(0.25,0.25,1.25), 0.25, nox::vis<float>::Blue );
+    fuzzyCube( Eigen::Vector3f(0,0,0), 0.25, nox::vis<float>::Black );
+    fuzzyCube( Eigen::Vector3f(1,0,0), 0.25, nox::vis<float>::Red );
+    fuzzyCube( Eigen::Vector3f(0,1,0), 0.25, nox::vis<float>::Green );
+    fuzzyCube( Eigen::Vector3f(0,0,1), 0.25, nox::vis<float>::Blue );
+    fuzzyCube( Eigen::Vector3f(1,1,0), 0.25, nox::vis<float>::Yellow );
+    fuzzyCube( Eigen::Vector3f(0,1,1), 0.25, nox::vis<float>::Cyan );
+    fuzzyCube( Eigen::Vector3f(1,0,1), 0.25, nox::vis<float>::Magenta );
+    fuzzyCube( Eigen::Vector3f(1,1,1), 0.25, nox::vis<float>::Orange );
+    fuzzyAffines();
+    alignedAffines();
 
     // Enter GLUT main loop. Main loop will be terminated only
     // on user request by exit(0). Other means do not currently exist in GLUT.
