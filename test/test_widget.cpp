@@ -56,7 +56,7 @@ public:
 
         // draw teapot
         glColor3f(1,1,1);
-        glutSolidTeapot( 1 );
+        glutSolidTeapot( 0.5 );
 
         // update buffer
         glutSwapBuffers();

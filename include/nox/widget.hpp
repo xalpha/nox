@@ -173,7 +173,7 @@ protected:
         const T zero = 0;
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        nyx::gl::Translate( one, one, zoom);	// Zoom
+        nyx::gl::Translate( zero, zero, zoom);	// Zoom
         nyx::gl::Rotate(elevation,one,zero,zero);	// rotate elevation
         nyx::gl::Rotate(azimuth,zero,one,zero);	// rotate azimuth
         nyx::gl::MultMatrix( m_mv.data() );
@@ -200,8 +200,8 @@ protected:
         m(0,0) = cotangent / static_cast<double>(aspect);
         m(1,1) = cotangent;
         m(2,2) = -static_cast<double>(zFar + zNear) / deltaZ;
-        m(3,2) = -1;
         m(2,3) = -2 * static_cast<double>(zNear * zFar) / deltaZ;
+        m(3,2) = -1;
         m(3,3) = 0;
         nyx::gl::MultMatrix( m.data() );
     }
