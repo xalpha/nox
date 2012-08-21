@@ -2,7 +2,7 @@
 //                                                                            //
 // This file is part of nox, a lightweight C++ template visualization library //
 //                                                                            //
-// Copyright (C) 2010, 2011 Alexandru Duliu                                   //
+// Copyright (C) 2012 Alexandru Duliu                                         //
 //                                                                            //
 // nox is free software; you can redistribute it and/or                       //
 // modify it under the terms of the GNU Lesser General Public                 //
