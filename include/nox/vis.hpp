@@ -94,9 +94,9 @@ public:
         setCameraView();
 
         // draw one big CS smack in the origin
-        glLineWidth( 3.0f );
-        drawCS(1.0f);
         glLineWidth( 2.0f );
+        drawCS(1.0f);
+        glLineWidth( 1.5f );
 
         // draw all transformations
         for( BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
