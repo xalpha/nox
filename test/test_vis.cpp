@@ -24,10 +24,10 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
-#include <nox/widget.hpp>
+#include <nox/vis.hpp>
 
 /*
- * test_widget.cpp
+ * test_vis.cpp
  *
  *  Created on: Aug 21, 2012
  *      Author: alex
@@ -35,55 +35,25 @@
 
 
 /////
-// extends widget by a basic draw function
-///
-
-template <typename T>
-class test_widget : public nox::widget<T>
-{
-public:
-    test_widget() : nox::widget<T>(){}
-    virtual ~test_widget(){}
-
-    virtual void draw()
-    {
-        // clear buffer
-        nyx::gl::ClearColor( nox::widget<T>::m_baseColor );
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // set the mvp matrix
-        nox::widget<T>::setView();
-
-        // draw teapot
-        glColor3f(1,1,1);
-        glutSolidTeapot( 0.5 );
-
-        // update buffer
-        glutSwapBuffers();
-    }
-};
-
-
-/////
 // Instances
 ///
-static test_widget<float> s_test_widget;
+static nox::vis<float> s_vis;
 
 
 /////
 // GLUT callbacks
 ///
 void idlefunc(void){ glutPostRedisplay(); }
-void reshapefunc(int width,int height){ s_test_widget.handleResize( width, height ); }
-void motionfunc(int x,int y){ s_test_widget.handleMouseMove( x,y ); }
-void keyboardfunc(unsigned char key,int x,int y){ s_test_widget.handleKeyboard( key ); }
-void displayfunc(){ s_test_widget.draw(); }
+void reshapefunc(int width,int height){ s_vis.handleResize( width, height ); }
+void motionfunc(int x,int y){ s_vis.handleMouseMove( x,y ); }
+void keyboardfunc(unsigned char key,int x,int y){ s_vis.handleKeyboard( key ); }
+void displayfunc(){ s_vis.draw(); }
 void mousefunc(int button,int state,int x,int y)
 {
     switch( button )
     {
-        case GLUT_LEFT_BUTTON : s_test_widget.handleMousePress( x,y,test_widget<float>::LeftButton ); break;
-        case GLUT_RIGHT_BUTTON : s_test_widget.handleMousePress( x,y,test_widget<float>::RightButton ); break;
+        case GLUT_LEFT_BUTTON : s_vis.handleMousePress( x,y,nox::vis<float>::LeftButton ); break;
+        case GLUT_RIGHT_BUTTON : s_vis.handleMousePress( x,y,nox::vis<float>::RightButton ); break;
     }
 }
 
@@ -99,7 +69,7 @@ int main( int argc, char** argv )
     glutInitDisplayMode( GLUT_DOUBLE| GLUT_RGBA| GLUT_DEPTH );
 
     // Creates the window.
-    glutCreateWindow( "nox: test widget" );
+    glutCreateWindow( "nox: test vis" );
 
     // init GLEW
     int err = glewInit();

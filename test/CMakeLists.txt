@@ -34,11 +34,11 @@ if( GLUT_FOUND )
     target_link_libraries( ${Nox_Test_widget} -lm -lc -Wall ${Nox_LIBRARIES} ${GLUT_LIBRARIES} )
     add_test( ${Nox_Test_widget} ${Nox_Test_widget} )
 
-    # add test for plot
-    #set( Nox_Test_plot test_plot )
-    #add_executable( ${Nox_Test_plot} test_plot.cpp )
-    #target_link_libraries( ${Nox_Test_plot} -lm -lc -Wall ${Nox_LINK_LIBRARIES} )
-    #add_test( ${Nox_Test_plot} ${Nox_Test_plot} )
+    # add test for vis
+    set( Nox_Test_vis test_vis )
+    add_executable( ${Nox_Test_vis} test_vis.cpp )
+    target_link_libraries( ${Nox_Test_vis} -lm -lc -Wall ${Nox_LIBRARIES} ${GLUT_LIBRARIES} )
+    add_test( ${Nox_Test_vis} ${Nox_Test_vis} )
 
 elseif()
     message( WARNING "GLUT not found, tests disabled." )

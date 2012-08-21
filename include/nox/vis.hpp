@@ -24,9 +24,11 @@
 #include <list>
 #include <numeric>
 
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 
-#include <nyx/gl.hpp>
+#include <nyx/vertex_buffer_object.hpp>
+
+#include <nox/widget.hpp>
 
 /*
  *  vis.hpp
@@ -40,7 +42,7 @@ namespace nox
 {
 
 template <typename T>
-class vis
+class vis : public widget<T>
 {
 public:
     typedef Eigen::Matrix<T,2,1> Vector2;
@@ -49,25 +51,43 @@ public:
     typedef Eigen::Matrix<T,4,4> Matrix4;
     typedef std::list< nyx::vertex_buffer_object<float,unsigned int> > BufferList;
 
-public:
-    enum MouseButton{ NoButton, LeftButton, RightButton, MiddleButton, X1Button, X2Button };
+    // The flags define:
+    // Colors:
+    // What to draw
+    // How to draw it
+    enum Flags
+    {
+        Red     = 0x00000001,
+        Green   = 0x00000002,
+        Blue    = 0x00000004,
+        Orange  = 0x00000008,
+        Black   = 0x00000010,
+        Gray    = 0x00000020,
+        Alpha1  = 0x00001000,
+        Alpha075= 0x00002000,
+        Alpha05 = 0x00004000,
+        Alpha025= 0x00008000,
+        Pos     = 0x01000000,
+        CS      = 0x01000000
+    };
 
-    vis() : widget()
+public:
+    vis() : widget<T>()
     {
         // init coordinate system geometry
-        m_cs_vertices.push_back( Eigen::Vector3f(0,0,0) );
-        m_cs_vertices.push_back( Eigen::Vector3f(1,0,0) );
-        m_cs_vertices.push_back( Eigen::Vector3f(0,0,0) );
-        m_cs_vertices.push_back( Eigen::Vector3f(0,1,0) );
-        m_cs_vertices.push_back( Eigen::Vector3f(0,0,0) );
-        m_cs_vertices.push_back( Eigen::Vector3f(0,0,1) );
+        m_cs_vertices.push_back( Vector3(0,0,0) );
+        m_cs_vertices.push_back( Vector3(1,0,0) );
+        m_cs_vertices.push_back( Vector3(0,0,0) );
+        m_cs_vertices.push_back( Vector3(0,1,0) );
+        m_cs_vertices.push_back( Vector3(0,0,0) );
+        m_cs_vertices.push_back( Vector3(0,0,1) );
 
-        m_cs_colors.push_back( Eigen::Vector4f(1,0,0,1) );
-        m_cs_colors.push_back( Eigen::Vector4f(1,0,0,1) );
-        m_cs_colors.push_back( Eigen::Vector4f(0,1,0,1) );
-        m_cs_colors.push_back( Eigen::Vector4f(0,1,0,1) );
-        m_cs_colors.push_back( Eigen::Vector4f(0,0,1,1) );
-        m_cs_colors.push_back( Eigen::Vector4f(0,0,1,1) );
+        m_cs_colors.push_back( Vector4(1,0,0,1) );
+        m_cs_colors.push_back( Vector4(1,0,0,1) );
+        m_cs_colors.push_back( Vector4(0,1,0,1) );
+        m_cs_colors.push_back( Vector4(0,1,0,1) );
+        m_cs_colors.push_back( Vector4(0,0,1,1) );
+        m_cs_colors.push_back( Vector4(0,0,1,1) );
 
         // init min
         m_min(0) = std::numeric_limits<T>::max();
@@ -87,11 +107,11 @@ public:
     void draw()
     {
         // clear buffer
-        nyx::gl::ClearColor( m_baseColor(0), m_baseColor(1), m_baseColor(2), 1 );
+        nyx::gl::ClearColor( nox::widget<T>::m_baseColor );
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // set the mvp matrix
-        setView();
+        widget<T>::setView();
 
         // draw one big CS smack in the origin
         glLineWidth( 2.0f );
@@ -105,16 +125,16 @@ public:
 
 
     template <typename R>
-    void plot( const Eigen::Matrix4<R,4,4> &trans, uint32_t flags )
+    void plot( const Eigen::Matrix<R,4,4> &trans, uint32_t flags )
     {
-        std::vector<Eigen::Matrix4<R,4,4> > vec;
+        std::vector<Eigen::Matrix<R,4,4> > vec;
         vec.push_back( trans );
         plot( vec, flags );
     }
 
 
     template <typename R>
-    void plot( const std::vector<Eigen::Matrix4<R,4,4> > &trans, uint32_t flags )
+    void plot( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint32_t flags )
     {
         // init stuff
         std::vector<T> pointsV;
@@ -143,7 +163,7 @@ public:
                 Vector4 v( 0.1f*m_cs_vertices[j](0),
                            0.1f*m_cs_vertices[j](1),
                            0.1f*m_cs_vertices[j](2), 1 );
-                v = trans[i].cast<T>() * v;
+                v = trans[i].template cast<T>() * v;
 
                 for( size_t k=0; k<3; k++ )
                     linesV.push_back( v(k) / v(3) );
@@ -169,8 +189,8 @@ public:
         glBegin( GL_LINES );
             for( size_t i=0; i<m_cs_vertices.size(); i++ )
             {
-                nyx::gl::Color4v( m_cs_colors[i].data() );
-                nyx::gl::Vertex3v( m_cs_vertices[i].data() );
+                nyx::gl::Color4( m_cs_colors[i].data() );
+                nyx::gl::Vertex3( m_cs_vertices[i].data() );
             }
         glEnd();
     }
@@ -202,9 +222,9 @@ public:
     {
         nyx::vertex_buffer_object<float,unsigned int> vbo;
         m_buffers.push_back( vbo );
-        m_buffers.back()->configure( 3, 4, 2, geometry );
-        m_buffers.back()->initVertices( v.data(), v.size()/3 );
-        m_buffers.back()->initColors( c.data() );
+        m_buffers.back().configure( 3, 4, 2, geometry );
+        m_buffers.back().initVertices( v.data(), v.size()/3 );
+        m_buffers.back().initColors( c.data() );
 
         // update the rotation center
         updateCenter( v );
@@ -224,7 +244,7 @@ public:
         }
 
         // update center
-        m_center = static_cast<T>(0.5) * (m_min + m_max);
+        widget<T>::m_center = static_cast<T>(0.5) * (m_min + m_max);
     }
 
 
