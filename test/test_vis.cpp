@@ -20,6 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include <stdint.h>
 
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -38,6 +39,7 @@
 // Instances
 ///
 static nox::vis<float> s_vis;
+static size_t count = 1000;
 
 
 /////
@@ -56,6 +58,21 @@ void mousefunc(int button,int state,int x,int y)
         case GLUT_RIGHT_BUTTON : s_vis.handleMousePress( x,y,nox::vis<float>::RightButton ); break;
     }
 }
+
+
+/////
+// Test Plotting functionds
+//
+void fuzzyCube( const Eigen::Vector3f& pos, float size, uint32_t flags )
+{
+    std::vector<Eigen::Vector3f> points;
+    points.reserve(count);
+    for( size_t i=0; i<count; i++ )
+        points.push_back( size * Eigen::Vector3f::Random() + pos );
+
+    s_vis.plot( points, flags );
+}
+
 
 int main( int argc, char** argv )
 {
@@ -88,6 +105,13 @@ int main( int argc, char** argv )
     glutMotionFunc(motionfunc);
     glutKeyboardFunc(keyboardfunc);
     glutIdleFunc(idlefunc);
+
+    // plot some stuff
+    s_vis.initialize();
+    fuzzyCube( Eigen::Vector3f(0.25,0.25,0.25), 0.25, nox::vis<float>::Black );
+    fuzzyCube( Eigen::Vector3f(1.25,0.25,0.25), 0.25, nox::vis<float>::Red );
+    fuzzyCube( Eigen::Vector3f(0.25,1.25,0.25), 0.25, nox::vis<float>::Green );
+    fuzzyCube( Eigen::Vector3f(0.25,0.25,1.25), 0.25, nox::vis<float>::Blue );
 
     // Enter GLUT main loop. Main loop will be terminated only
     // on user request by exit(0). Other means do not currently exist in GLUT.

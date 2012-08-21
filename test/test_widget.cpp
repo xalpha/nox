@@ -119,6 +119,8 @@ int main( int argc, char** argv )
     glutKeyboardFunc(keyboardfunc);
     glutIdleFunc(idlefunc);
 
+    s_test_widget.initialize();
+
     // Enter GLUT main loop. Main loop will be terminated only
     // on user request by exit(0). Other means do not currently exist in GLUT.
     glutMainLoop();

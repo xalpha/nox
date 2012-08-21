@@ -128,6 +128,34 @@ public:
 
 
     template <typename R>
+    void plot( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags )
+    {
+        // init stuff
+        std::vector<T> pointsV;
+        std::vector<T> pointsC;
+
+        // color
+        Vector4 col = color( flags );
+
+        for( size_t i=0; i<points.size(); i++ )
+        {
+            float fac = 1.0f - 0.75f*( float(i)/float(points.size()) );
+
+            pointsV.push_back( static_cast<T>( points[i](0) ) );
+            pointsV.push_back( static_cast<T>( points[i](1) ) );
+            pointsV.push_back( static_cast<T>( points[i](2) ) );
+
+            pointsC.push_back( col(0) );
+            pointsC.push_back( col(1) );
+            pointsC.push_back( col(2) );
+            pointsC.push_back( col(3) * fac );
+        }
+
+        addGeometry( pointsV, pointsC, GL_POINTS );
+    }
+
+
+    template <typename R>
     void plot( const Eigen::Matrix<R,4,4> &trans, uint32_t flags )
     {
         std::vector<Eigen::Matrix<R,4,4> > vec;
@@ -210,12 +238,12 @@ public:
 
         // get the color
         Vector4 col(0,0,0,a);
-        if( flags & Red )         col = Vector4f( 1,0,0,a );
-        else if( flags & Green )  col = Vector4f( 0,1,0,a );
-        else if( flags & Blue )   col = Vector4f( 0,0,1,a );
-        else if( flags & Orange ) col = Vector4f( 1,0.5,0,a );
-        else if( flags & Black )  col = Vector4f( 0,0,0,a );
-        else if( flags & Gray )   col = Vector4f( 0.5,0.5,0.5,a );
+        if( flags & Red )         col = Vector4( 1,0,0,a );
+        else if( flags & Green )  col = Vector4( 0,1,0,a );
+        else if( flags & Blue )   col = Vector4( 0,0,1,a );
+        else if( flags & Orange ) col = Vector4( 1,0.5,0,a );
+        else if( flags & Black )  col = Vector4( 0,0,0,a );
+        else if( flags & Gray )   col = Vector4( 0.5,0.5,0.5,a );
 
         return col;
     }
