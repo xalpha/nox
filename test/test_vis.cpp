@@ -47,7 +47,7 @@ void idlefunc(void){ glutPostRedisplay(); }
 void reshapefunc(int width,int height){ s_vis.handleResize( width, height ); }
 void motionfunc(int x,int y){ s_vis.handleMouseMove( x,y ); }
 void keyboardfunc(unsigned char key,int x,int y){ s_vis.handleKeyboard( key ); }
-void displayfunc(){ s_vis.draw(); }
+void displayfunc(){ s_vis.draw(); glutSwapBuffers(); }
 void mousefunc(int button,int state,int x,int y)
 {
     switch( button )

@@ -98,6 +98,9 @@ public:
         m_max(0) = std::numeric_limits<T>::min();
         m_max(0) = std::numeric_limits<T>::min();
         m_max(0) = std::numeric_limits<T>::min();
+
+        // set background to white
+        widget<T>::m_baseColor = Vector3(1,1,1);
     }
 
 
