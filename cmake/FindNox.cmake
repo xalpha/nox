@@ -59,9 +59,9 @@ set( Nox_INCLUDE_DIRS
 ###
 
 # find GLEW
-if( NOT GLEW_FOUND )
-    find_package( GLEW REQUIRED )
+if( NOT Nyx_FOUND )
+    find_package( Nyx REQUIRED )
 endif()
-list( APPEND Nox_INCLUDE_DIRS ${GLEW_INCLUDE_PATH} )
-list( APPEND Nox_LIBRARIES ${GLEW_LIBRARY} )
+list( APPEND Nox_INCLUDE_DIRS ${Nyx_INCLUDE_DIRS} )
+list( APPEND Nox_LIBRARIES ${NYX_LIBRARIRES} )
 

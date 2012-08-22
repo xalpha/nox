@@ -63,9 +63,7 @@ public:
         // setup the rotation matrix
         m_mv = Matrix4::Identity();
 
-        m_baseColor(0) = static_cast<T>(0);
-        m_baseColor(1) = static_cast<T>(0);
-        m_baseColor(2) = static_cast<T>(0);
+        m_backgroundColor = Vector3::Zero();
     }
 
 
@@ -150,6 +148,20 @@ public:
         m_size[1] = height;
     }
 
+
+    void setBackgroundColor( const Vector3& col )
+    {
+        m_backgroundColor = col;
+    }
+
+
+    void setBackgroundColor( T red, T green, T blue )
+    {
+        m_backgroundColor(0) = red;
+        m_backgroundColor(1) = green;
+        m_backgroundColor(2) = blue;
+    }
+
 protected:
     int mouseTrans( int i )
     {
@@ -232,7 +244,7 @@ protected:
     Matrix4 m_mv; // modelview matrix
 
     // default colors
-    Vector3 m_baseColor;
+    Vector3 m_backgroundColor;
 };
 
 } // namespace nyx

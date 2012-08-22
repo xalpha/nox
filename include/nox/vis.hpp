@@ -103,7 +103,7 @@ public:
         m_max(0) = std::numeric_limits<T>::min();
 
         // set background to white
-        widget<T>::m_baseColor = Vector3(1,1,1);
+        widget<T>::m_backgroundColor = Vector3(1,1,1);
     }
 
 
@@ -113,7 +113,7 @@ public:
     void draw()
     {
         // clear buffer
-        nyx::gl::ClearColor( nox::widget<T>::m_baseColor );
+        nyx::gl::ClearColor( nox::widget<T>::m_backgroundColor );
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // set the mvp matrix
