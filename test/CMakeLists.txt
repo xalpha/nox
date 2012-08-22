@@ -21,9 +21,10 @@
 
 # find glut
 find_package( GLUT QUIET )
+find_package( GLEW QUIET )
 
 # if GLUT found
-if( GLUT_FOUND )
+if( GLUT_FOUND AND GLEW_FOUND )
 
     # set include directories
     include_directories( ${Nox_INCLUDE_DIRS} ${GLUT_INCLUDE_DIR} )
@@ -31,13 +32,13 @@ if( GLUT_FOUND )
     # add test for widget
     set( Nox_Test_widget test_widget )
     add_executable( ${Nox_Test_widget} test_widget.cpp )
-    target_link_libraries( ${Nox_Test_widget} -lm -lc -Wall ${Nox_LIBRARIES} ${GLUT_LIBRARIES} )
+    target_link_libraries( ${Nox_Test_widget} -lm -lc -Wall ${Nox_LIBRARIES} ${GLEW_LIBRARY} ${GLUT_LIBRARIES} )
     add_test( ${Nox_Test_widget} ${Nox_Test_widget} )
 
     # add test for vis
     set( Nox_Test_vis test_vis )
     add_executable( ${Nox_Test_vis} test_vis.cpp )
-    target_link_libraries( ${Nox_Test_vis} -lm -lc -Wall ${Nox_LIBRARIES} ${GLUT_LIBRARIES} )
+    target_link_libraries( ${Nox_Test_vis} -lm -lc -Wall ${Nox_LIBRARIES} ${GLEW_LIBRARY} ${GLUT_LIBRARIES} )
     add_test( ${Nox_Test_vis} ${Nox_Test_vis} )
 
 elseif()
