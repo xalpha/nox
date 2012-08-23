@@ -27,10 +27,10 @@
 
 #include <Eigen/Geometry>
 
-#include <nox/vis.hpp>
+#include <nox/plot.hpp>
 
 /*
- * test_vis.cpp
+ * test_plot.cpp
  *
  *  Created on: Aug 21, 2012
  *      Author: alex
@@ -40,7 +40,7 @@
 /////
 // Instances
 ///
-static nox::vis<float> s_vis;
+static nox::plot<float> s_plot;
 static size_t count = 1000;
 
 
@@ -48,16 +48,16 @@ static size_t count = 1000;
 // GLUT callbacks
 ///
 void idlefunc(void){ glutPostRedisplay(); }
-void reshapefunc(int width,int height){ s_vis.handleResize( width, height ); }
-void motionfunc(int x,int y){ s_vis.handleMouseMove( x,y ); }
-void keyboardfunc(unsigned char key,int x,int y){ s_vis.handleKeyboard( key ); }
-void displayfunc(){ s_vis.draw(); glutSwapBuffers(); }
+void reshapefunc(int width,int height){ s_plot.handleResize( width, height ); }
+void motionfunc(int x,int y){ s_plot.handleMouseMove( x,y ); }
+void keyboardfunc(unsigned char key,int x,int y){ s_plot.handleKeyboard( key ); }
+void displayfunc(){ s_plot.draw(); glutSwapBuffers(); }
 void mousefunc(int button,int state,int x,int y)
 {
     switch( button )
     {
-        case GLUT_LEFT_BUTTON : s_vis.handleMousePress( x,y,nox::vis<float>::LeftButton ); break;
-        case GLUT_RIGHT_BUTTON : s_vis.handleMousePress( x,y,nox::vis<float>::RightButton ); break;
+        case GLUT_LEFT_BUTTON : s_plot.handleMousePress( x,y,nox::plot<float>::LeftButton ); break;
+        case GLUT_RIGHT_BUTTON : s_plot.handleMousePress( x,y,nox::plot<float>::RightButton ); break;
     }
 }
 
@@ -72,7 +72,7 @@ void fuzzyCube( const Eigen::Vector3f& pos, float size, uint32_t flags )
     for( size_t i=0; i<count; i++ )
         points.push_back( size * Eigen::Vector3f::Random() + pos );
 
-    s_vis.plot( points, flags );
+    s_plot( points, flags );
 }
 
 
@@ -107,7 +107,7 @@ void fuzzyAffines()
         trans.push_back( t.matrix() );
     }
 
-    s_vis.plot( trans, nox::vis<float>::Black | nox::vis<float>::CS );
+    s_plot( trans, nox::plot<float>::Black | nox::plot<float>::CS );
 }
 
 
@@ -124,9 +124,8 @@ void alignedAffines()
         trans.push_back( t.matrix() );
     }
 
-    s_vis.plot( trans, nox::vis<float>::Black | nox::vis<float>::CS );
+    s_plot( trans, nox::plot<float>::Black | nox::plot<float>::CS );
 }
-
 
 
 int main( int argc, char** argv )
@@ -141,7 +140,7 @@ int main( int argc, char** argv )
     glutInitDisplayMode( GLUT_MULTISAMPLE| GLUT_RGBA| GLUT_DEPTH );
 
     // Creates the window.
-    glutCreateWindow( "nox: test vis" );
+    glutCreateWindow( "nox: test plot" );
 
     // init GLEW
     int err = glewInit();
@@ -162,15 +161,15 @@ int main( int argc, char** argv )
     glutIdleFunc(idlefunc);
 
     // plot some stuff
-    s_vis.initialize();
-    fuzzyCube( Eigen::Vector3f(0,0,0), 0.25, nox::vis<float>::Black );
-    fuzzyCube( Eigen::Vector3f(1,0,0), 0.25, nox::vis<float>::Red );
-    fuzzyCube( Eigen::Vector3f(0,1,0), 0.25, nox::vis<float>::Green );
-    fuzzyCube( Eigen::Vector3f(0,0,1), 0.25, nox::vis<float>::Blue );
-    fuzzyCube( Eigen::Vector3f(1,1,0), 0.25, nox::vis<float>::Yellow );
-    fuzzyCube( Eigen::Vector3f(0,1,1), 0.25, nox::vis<float>::Cyan );
-    fuzzyCube( Eigen::Vector3f(1,0,1), 0.25, nox::vis<float>::Magenta );
-    fuzzyCube( Eigen::Vector3f(1,1,1), 0.25, nox::vis<float>::Orange );
+    s_plot.initialize();
+    fuzzyCube( Eigen::Vector3f(0,0,0), 0.25, nox::plot<float>::Black );
+    fuzzyCube( Eigen::Vector3f(1,0,0), 0.25, nox::plot<float>::Red );
+    fuzzyCube( Eigen::Vector3f(0,1,0), 0.25, nox::plot<float>::Green );
+    fuzzyCube( Eigen::Vector3f(0,0,1), 0.25, nox::plot<float>::Blue );
+    fuzzyCube( Eigen::Vector3f(1,1,0), 0.25, nox::plot<float>::Yellow );
+    fuzzyCube( Eigen::Vector3f(0,1,1), 0.25, nox::plot<float>::Cyan );
+    fuzzyCube( Eigen::Vector3f(1,0,1), 0.25, nox::plot<float>::Magenta );
+    fuzzyCube( Eigen::Vector3f(1,1,1), 0.25, nox::plot<float>::Orange );
     fuzzyAffines();
     alignedAffines();
 

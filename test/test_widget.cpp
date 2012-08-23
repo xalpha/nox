@@ -87,6 +87,7 @@ void mousefunc(int button,int state,int x,int y)
     }
 }
 
+
 int main( int argc, char** argv )
 {
     // init glut
