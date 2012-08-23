@@ -162,14 +162,14 @@ int main( int argc, char** argv )
 
     // plot some stuff
     s_plot.initialize();
-    fuzzyCube( Eigen::Vector3f(0,0,0), 0.25, nox::plot<float>::Black );
-    fuzzyCube( Eigen::Vector3f(1,0,0), 0.25, nox::plot<float>::Red );
-    fuzzyCube( Eigen::Vector3f(0,1,0), 0.25, nox::plot<float>::Green );
-    fuzzyCube( Eigen::Vector3f(0,0,1), 0.25, nox::plot<float>::Blue );
-    fuzzyCube( Eigen::Vector3f(1,1,0), 0.25, nox::plot<float>::Yellow );
-    fuzzyCube( Eigen::Vector3f(0,1,1), 0.25, nox::plot<float>::Cyan );
-    fuzzyCube( Eigen::Vector3f(1,0,1), 0.25, nox::plot<float>::Magenta );
-    fuzzyCube( Eigen::Vector3f(1,1,1), 0.25, nox::plot<float>::Orange );
+    fuzzyCube( Eigen::Vector3f(0,0,0), 0.125, nox::plot<float>::Black );
+    fuzzyCube( Eigen::Vector3f(1,0,0), 0.125, nox::plot<float>::Red );
+    fuzzyCube( Eigen::Vector3f(0,1,0), 0.125, nox::plot<float>::Green );
+    fuzzyCube( Eigen::Vector3f(0,0,1), 0.125, nox::plot<float>::Blue );
+    fuzzyCube( Eigen::Vector3f(1,1,0), 0.125, nox::plot<float>::Yellow );
+    fuzzyCube( Eigen::Vector3f(0,1,1), 0.125, nox::plot<float>::Cyan );
+    fuzzyCube( Eigen::Vector3f(1,0,1), 0.125, nox::plot<float>::Magenta );
+    fuzzyCube( Eigen::Vector3f(1,1,1), 0.125, nox::plot<float>::Orange );
     fuzzyAffines();
     alignedAffines();
 

@@ -49,7 +49,8 @@ public:
     typedef Eigen::Matrix<T,3,1> Vector3;
     typedef Eigen::Matrix<T,4,1> Vector4;
     typedef Eigen::Matrix<T,4,4> Matrix4;
-    typedef std::list< nyx::vertex_buffer_object<float,unsigned int> > BufferList;
+    typedef nyx::vertex_buffer_object<T,unsigned int> VBO;
+    typedef std::list< VBO > BufferList;
 
     // The flags define:
     // Colors:
@@ -174,7 +175,7 @@ inline void plot<T>::draw()
     glLineWidth( 1.5f );
 
     // draw all transformations
-    for( BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
+    for( typename BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
         it->draw();
 }
 
@@ -313,7 +314,7 @@ inline typename plot<T>::Vector4 plot<T>::color( uint32_t flags )
 template <typename T>
 inline void plot<T>::addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry )
 {
-    nyx::vertex_buffer_object<float,unsigned int> vbo;
+    VBO vbo;
     m_buffers.push_back( vbo );
     m_buffers.back().configure( 3, 4, 2, geometry );
     m_buffers.back().initVertices( v.data(), v.size()/3 );

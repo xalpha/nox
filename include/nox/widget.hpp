@@ -149,6 +149,12 @@ public:
     }
 
 
+    void setMV( const Matrix4& mv )
+    {
+        m_mv = mv;
+    }
+
+
     void setBackgroundColor( const Vector3& col )
     {
         m_backgroundColor = col;
