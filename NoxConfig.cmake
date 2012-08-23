@@ -68,7 +68,7 @@ set( Nox_INCLUDE_DIRS
 
 # link libraries
 set( Nox_LIBRARIES
-    ${NYX_LIBRARIRES} CACHE INTERNAL "all libs nox needs" )
+    ${Nyx_LIBRARIES} CACHE INTERNAL "all libs nox needs" )
 
 # enable C++11 support
 #if( NOT WIN32 )

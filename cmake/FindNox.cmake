@@ -58,10 +58,10 @@ set( Nox_INCLUDE_DIRS
 ## Dependencies
 ###
 
-# find GLEW
+# find Nyx
 if( NOT Nyx_FOUND )
     find_package( Nyx REQUIRED )
 endif()
 list( APPEND Nox_INCLUDE_DIRS ${Nyx_INCLUDE_DIRS} )
-list( APPEND Nox_LIBRARIES ${NYX_LIBRARIRES} )
+list( APPEND Nox_LIBRARIES ${Nyx_LIBRARIES} )
 
