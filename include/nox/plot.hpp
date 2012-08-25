@@ -84,6 +84,9 @@ public:
     void draw();
 
     template <typename R>
+    void operator() ( const std::vector<R> &points, uint32_t flags );
+
+    template <typename R>
     void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags );
 
     template <typename R>
@@ -177,6 +180,31 @@ inline void plot<T>::draw()
     // draw all transformations
     for( typename BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
         it->draw();
+}
+
+
+template <typename T>
+template <typename R>
+inline void plot<T>::operator() ( const std::vector<R> &points, uint32_t flags )
+{
+    // init stuff
+    Vector4 col = color( flags );
+    size_t vertexCount = points.size()/3;
+    std::vector<T> colors(vertexCount*4);
+    std::vector<T> vertices(vertexCount*3);
+    for( size_t i=0; i<vertexCount; i++ )
+    {
+        colors[i*4+0] = col(0);
+        colors[i*4+1] = col(1);
+        colors[i*4+2] = col(2);
+        colors[i*4+3] = col(3);
+
+        vertices[i*3+0] = static_cast<T>(points[i*3+0]);
+        vertices[i*3+1] = static_cast<T>(points[i*3+1]);
+        vertices[i*3+2] = static_cast<T>(points[i*3+2]);
+    }
+
+    addGeometry( vertices, colors, GL_POINTS );
 }
 
 
