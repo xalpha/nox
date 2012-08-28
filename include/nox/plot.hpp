@@ -87,6 +87,9 @@ public:
     void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags );
 
     template <typename R>
+    void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, const std::vector<Eigen::Matrix<R,4,1> > &colors );
+
+    template <typename R>
     void operator() ( const Eigen::Matrix<R,4,4> &trans, uint32_t flags );
 
     template <typename R>
@@ -193,8 +196,6 @@ inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &poin
 
     for( size_t i=0; i<points.size(); i++ )
     {
-        float fac = 1.0f - 0.75f*( float(i)/float(points.size()) );
-
         pointsV.push_back( static_cast<T>( points[i](0) ) );
         pointsV.push_back( static_cast<T>( points[i](1) ) );
         pointsV.push_back( static_cast<T>( points[i](2) ) );
@@ -202,7 +203,31 @@ inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &poin
         pointsC.push_back( col(0) );
         pointsC.push_back( col(1) );
         pointsC.push_back( col(2) );
-        pointsC.push_back( col(3) * fac );
+        pointsC.push_back( col(3) );
+    }
+
+    addGeometry( pointsV, pointsC, GL_POINTS );
+}
+
+
+template <typename T>
+template <typename R>
+inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, const std::vector<Eigen::Matrix<R,4,1> > &colors )
+{
+    // init stuff
+    std::vector<T> pointsV;
+    std::vector<T> pointsC;
+
+    for( size_t i=0; i<points.size(); i++ )
+    {
+        pointsV.push_back( static_cast<T>( points[i](0) ) );
+        pointsV.push_back( static_cast<T>( points[i](1) ) );
+        pointsV.push_back( static_cast<T>( points[i](2) ) );
+
+        pointsC.push_back( static_cast<T>( colors[i](0) ) );
+        pointsC.push_back( static_cast<T>( colors[i](1) ) );
+        pointsC.push_back( static_cast<T>( colors[i](2) ) );
+        pointsC.push_back( static_cast<T>( colors[i](3) ) );
     }
 
     addGeometry( pointsV, pointsC, GL_POINTS );
