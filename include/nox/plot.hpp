@@ -21,7 +21,9 @@
 
 #pragma once
 
+#include <iostream>
 #include <list>
+#include <map>
 #include <numeric>
 
 #include <Eigen/Core>
@@ -51,6 +53,7 @@ public:
     typedef Eigen::Matrix<T,4,4> Matrix4;
     typedef nyx::vertex_buffer_object<T,unsigned int> VBO;
     typedef std::list< VBO > BufferList;
+    typedef std::map<size_t,BufferList> LayerMap;
 
     // The flags define:
     // Colors:
@@ -80,22 +83,22 @@ public:
 
     virtual ~plot();
 
-
     void draw();
 
     template <typename R>
-    void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags );
+    void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags, size_t layer=0 );
 
     template <typename R>
-    void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, const std::vector<Eigen::Matrix<R,4,1> > &colors );
+    void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, const std::vector<Eigen::Matrix<R,4,1> > &colors, size_t layer=0 );
 
     template <typename R>
-    void operator() ( const Eigen::Matrix<R,4,4> &trans, uint32_t flags );
+    void operator() ( const Eigen::Matrix<R,4,4> &trans, uint32_t flags, size_t layer=0 );
 
     template <typename R>
-    void operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint32_t flags );
+    void operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint32_t flags, size_t layer=0 );
 
     void clear();
+    void clear( const size_t layer );
 
 
 protected:
@@ -103,13 +106,14 @@ protected:
 
     Vector4 color( uint32_t flags );
 
-    void addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry );
+    void addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, size_t layer );
+    void addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, BufferList );
 
     void updateCenter( const std::vector<T> &v );
 
 protected:
     // VBO buffers
-    BufferList m_buffers;
+    LayerMap m_layers;
 
     // coordinate system
     std::vector<Vector3> m_cs_vertices;
@@ -178,14 +182,15 @@ inline void plot<T>::draw()
     glLineWidth( 1.5f );
 
     // draw all transformations
-    for( typename BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
-        it->draw();
+    for( typename LayerMap::iterator it=m_layers.begin(); it != m_layers.end(); it++ )
+        for( typename BufferList::iterator bufIt=it->second.begin(); bufIt!=it->second.end(); bufIt++ )
+            bufIt->draw();
 }
 
 
 template <typename T>
 template <typename R>
-inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags )
+inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags, size_t layer )
 {
     // init stuff
     std::vector<T> pointsV;
@@ -206,13 +211,13 @@ inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &poin
         pointsC.push_back( col(3) );
     }
 
-    addGeometry( pointsV, pointsC, GL_POINTS );
+    addGeometry( pointsV, pointsC, GL_POINTS, layer );
 }
 
 
 template <typename T>
 template <typename R>
-inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, const std::vector<Eigen::Matrix<R,4,1> > &colors )
+inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, const std::vector<Eigen::Matrix<R,4,1> > &colors, size_t layer )
 {
     // init stuff
     std::vector<T> pointsV;
@@ -230,23 +235,23 @@ inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &poin
         pointsC.push_back( static_cast<T>( colors[i](3) ) );
     }
 
-    addGeometry( pointsV, pointsC, GL_POINTS );
+    addGeometry( pointsV, pointsC, GL_POINTS, layer );
 }
 
 
 template <typename T>
 template <typename R>
-inline void plot<T>::operator() ( const Eigen::Matrix<R,4,4> &trans, uint32_t flags )
+inline void plot<T>::operator() ( const Eigen::Matrix<R,4,4> &trans, uint32_t flags, size_t layer )
 {
     std::vector<Eigen::Matrix<R,4,4> > vec;
     vec.push_back( trans );
-    plot( vec, flags );
+    this( vec, flags, layer );
 }
 
 
 template <typename T>
 template <typename R>
-void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint32_t flags )
+void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint32_t flags, size_t layer )
 {
     // init stuff
     std::vector<T> pointsV;
@@ -285,15 +290,31 @@ void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint
         }
     }
 
-    addGeometry( pointsV, pointsC, GL_POINTS );
-    addGeometry( linesV, linesC, GL_LINES );
+    addGeometry( pointsV, pointsC, GL_POINTS, layer );
+    addGeometry( linesV, linesC, GL_LINES, layer );
 }
 
 
 template <typename T>
 inline void plot<T>::clear()
 {
-    m_buffers.clear();
+    m_layers.clear();
+}
+
+
+template <typename T>
+inline void plot<T>::clear( const size_t layer )
+{
+    for( typename LayerMap::iterator it=m_layers.begin(); it != m_layers.end(); it++ )
+    {
+        if( layer == it->first )
+        {
+            m_layers.erase( it );
+            return;
+        }
+    }
+
+    std::cerr << "nox::plot::clear: layer \"" << layer << "\" not found." << std::endl;
 }
 
 
@@ -337,13 +358,12 @@ inline typename plot<T>::Vector4 plot<T>::color( uint32_t flags )
 
 
 template <typename T>
-inline void plot<T>::addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry )
+inline void plot<T>::addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, size_t layer )
 {
-    VBO vbo;
-    m_buffers.push_back( vbo );
-    m_buffers.back().configure( 3, 4, 2, geometry );
-    m_buffers.back().initVertices( v.data(), v.size()/3 );
-    m_buffers.back().initColors( c.data() );
+    m_layers[layer].push_back( VBO() );
+    m_layers[layer].back().configure( 3, 4, 2, geometry );
+    m_layers[layer].back().initVertices( v.data(), v.size()/3 );
+    m_layers[layer].back().initColors( c.data() );
 
     // update the rotation center
     updateCenter( v );
