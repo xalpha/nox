@@ -65,14 +65,14 @@ void mousefunc(int button,int state,int x,int y)
 /////
 // Test Plotting functionds
 //
-void fuzzyCube( const Eigen::Vector3f& pos, float size, uint32_t flags )
+void fuzzyCube( const Eigen::Vector3f& pos, float size, uint32_t flags, size_t layer )
 {
     std::vector<Eigen::Vector3f> points;
     points.reserve(count);
     for( size_t i=0; i<count; i++ )
         points.push_back( size * Eigen::Vector3f::Random() + pos );
 
-    s_plot( points, flags );
+    s_plot( points, flags, layer );
 }
 
 
@@ -162,14 +162,15 @@ int main( int argc, char** argv )
 
     // plot some stuff
     s_plot.initialize();
-    fuzzyCube( Eigen::Vector3f(0,0,0), 0.125, nox::plot<float>::Black );
-    fuzzyCube( Eigen::Vector3f(1,0,0), 0.125, nox::plot<float>::Red );
-    fuzzyCube( Eigen::Vector3f(0,1,0), 0.125, nox::plot<float>::Green );
-    fuzzyCube( Eigen::Vector3f(0,0,1), 0.125, nox::plot<float>::Blue );
-    fuzzyCube( Eigen::Vector3f(1,1,0), 0.125, nox::plot<float>::Yellow );
-    fuzzyCube( Eigen::Vector3f(0,1,1), 0.125, nox::plot<float>::Cyan );
-    fuzzyCube( Eigen::Vector3f(1,0,1), 0.125, nox::plot<float>::Magenta );
-    fuzzyCube( Eigen::Vector3f(1,1,1), 0.125, nox::plot<float>::Orange );
+    fuzzyCube( Eigen::Vector3f(1,1,0), 0.125, nox::plot<float>::Yellow, 4 );
+    fuzzyCube( Eigen::Vector3f(0,1,1), 0.125, nox::plot<float>::Cyan, 5 );
+    fuzzyCube( Eigen::Vector3f(1,0,1), 0.125, nox::plot<float>::Magenta, 6 );
+    fuzzyCube( Eigen::Vector3f(1,1,1), 0.125, nox::plot<float>::Orange, 7 );
+    fuzzyCube( Eigen::Vector3f(0,0,0), 0.125, nox::plot<float>::Black, 0 );
+    fuzzyCube( Eigen::Vector3f(1,0,0), 0.125, nox::plot<float>::Red, 1 );
+    fuzzyCube( Eigen::Vector3f(0,1,0), 0.125, nox::plot<float>::Green, 2 );
+    fuzzyCube( Eigen::Vector3f(0,0,1), 0.125, nox::plot<float>::Blue, 3 );
+
     fuzzyAffines();
     alignedAffines();
 
