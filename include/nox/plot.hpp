@@ -64,8 +64,8 @@ public:
         T pointSize;
     };
 
-    typedef std::list< VBO > BufferList;
-    typedef std::map<size_t,BufferList> LayerMap;
+    typedef std::list< Model > ModelList;
+    typedef std::map<size_t,ModelList> LayerMap;
 
     // The flags define:
     // Colors:
@@ -124,7 +124,6 @@ protected:
     Vector4 color( uint32_t flags );
 
     void addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, size_t layer );
-    void addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, BufferList );
 
     void updateCenter( const std::vector<T> &v );
 
@@ -151,7 +150,10 @@ protected:
 ///
 
 template <typename T>
-inline plot<T>::plot() : widget<T>()
+inline plot<T>::plot() :
+    widget<T>(),
+    m_lineWidth(1),
+    m_pointSize(1)
 {
     // init coordinate system geometry
     m_cs_vertices.push_back( Vector3(0,0,0) );
@@ -204,8 +206,14 @@ inline void plot<T>::draw()
 
     // draw all transformations
     for( typename LayerMap::iterator it=m_layers.begin(); it != m_layers.end(); it++ )
-        for( typename BufferList::iterator bufIt=it->second.begin(); bufIt!=it->second.end(); bufIt++ )
-            bufIt->draw();
+    {
+        for( typename ModelList::iterator bufIt=it->second.begin(); bufIt!=it->second.end(); bufIt++ )
+        {
+            glLineWidth( static_cast<GLfloat>(bufIt->lineWidth) );
+            glPointSize( static_cast<GLfloat>(bufIt->pointSize) );
+            bufIt->buffer.draw();
+        }
+    }
 }
 
 
@@ -397,10 +405,12 @@ inline typename plot<T>::Vector4 plot<T>::color( uint32_t flags )
 template <typename T>
 inline void plot<T>::addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, size_t layer )
 {
-    m_layers[layer].push_back( VBO() );
-    m_layers[layer].back().configure( 3, 4, 2, geometry );
-    m_layers[layer].back().initVertices( v.data(), v.size()/3 );
-    m_layers[layer].back().initColors( c.data() );
+    m_layers[layer].push_back( Model() );
+    m_layers[layer].back().buffer.configure( 3, 4, 2, geometry );
+    m_layers[layer].back().buffer.initVertices( v.data(), v.size()/3 );
+    m_layers[layer].back().buffer.initColors( c.data() );
+    m_layers[layer].back().lineWidth = m_lineWidth;
+    m_layers[layer].back().pointSize = m_pointSize;
 
     // update the rotation center
     updateCenter( v );
