@@ -44,12 +44,24 @@ namespace nox
 template <typename T>
 class plot : public widget<T>
 {
+
+protected:
+
+
 public:
     typedef Eigen::Matrix<T,2,1> Vector2;
     typedef Eigen::Matrix<T,3,1> Vector3;
     typedef Eigen::Matrix<T,4,1> Vector4;
     typedef Eigen::Matrix<T,4,4> Matrix4;
     typedef nyx::vertex_buffer_object<T,unsigned int> VBO;
+
+    struct Model
+    {
+        VBO buffer;
+        T lineWidth;
+        T pointSize;
+    };
+
     typedef std::list< VBO > BufferList;
 
     // The flags define:
@@ -75,13 +87,17 @@ public:
         CS      = 0x01000000
     };
 
+
+
 public:
     plot();
 
     virtual ~plot();
 
-
     void draw();
+
+    void setLineWidth( T width );
+    void setPointSize( T size );
 
     template <typename R>
     void operator() ( const std::vector<Eigen::Matrix<R,3,1> > &points, uint32_t flags );
@@ -114,6 +130,10 @@ protected:
     // coordinate system
     std::vector<Vector3> m_cs_vertices;
     std::vector<Vector4> m_cs_colors;
+
+    // states
+    T m_lineWidth;
+    T m_pointSize;
 
     // min and max coords in volume
     Vector3 m_min;
@@ -180,6 +200,20 @@ inline void plot<T>::draw()
     // draw all transformations
     for( typename BufferList::iterator it=m_buffers.begin(); it!=m_buffers.end(); it++ )
         it->draw();
+}
+
+
+template <typename T>
+inline void plot<T>::setLineWidth( T width )
+{
+    m_lineWidth = width;
+}
+
+
+template <typename T>
+inline void plot<T>::setPointSize( T size )
+{
+    m_pointSize = size;
 }
 
 
@@ -294,6 +328,8 @@ template <typename T>
 inline void plot<T>::clear()
 {
     m_buffers.clear();
+    m_min = Vector3::Zero();
+    m_max = Vector3::Zero();
 }
 
 
@@ -367,4 +403,4 @@ inline void plot<T>::updateCenter( const std::vector<T> &v )
     widget<T>::m_center = static_cast<T>(0.5) * (m_min + m_max);
 }
 
-} // namespace nyx
+} // namespace nox
