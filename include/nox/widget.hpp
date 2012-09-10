@@ -47,13 +47,12 @@ public:
 public:
     enum MouseButton{ NoButton, LeftButton, RightButton, MiddleButton, X1Button, X2Button };
 
-    widget()
+    widget() :
+        m_fov(60.0),
+        m_mouseX(0),
+        m_mouseY(0),
+        m_mouseButton(widget::NoButton)
     {
-        // mouse handling
-        m_mouseX=0;
-        m_mouseY=0;
-        m_mouseButton = widget::NoButton;
-
         m_view_transform(0) = static_cast<T>(0.0); // elevation
         m_view_transform(1) = static_cast<T>(0.0); // azimuth
         m_view_transform(2) = static_cast<T>(-1.5); // zoom
@@ -87,6 +86,12 @@ public:
 
         glLineWidth( 1.0f );
         glPointSize( 5.0f );
+    }
+
+
+    void setFOV( T fov )
+    {
+        m_fov = fov;
     }
 
 
@@ -228,7 +233,7 @@ protected:
     void setView()
     {
         // setProjection
-        setProjection( static_cast<T>(60.0),
+        setProjection( static_cast<T>(m_fov),
                        static_cast<T>(m_size[0])/static_cast<T>(m_size[1]),
                        static_cast<T>(0.002),
                        static_cast<T>(1000.0) );
@@ -238,7 +243,8 @@ protected:
     }
 
 protected:
-    // geometry
+    // camera
+    T m_fov;
     int m_size[2];
 
     // default mouse handling
