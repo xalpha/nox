@@ -60,6 +60,7 @@ public:
     struct Model
     {
         VBO buffer;
+        T color;
         T lineWidth;
         T pointSize;
     };
@@ -73,19 +74,6 @@ public:
     // How to draw it
     enum Flags
     {
-        Red     = 0x00000001,
-        Green   = 0x00000002,
-        Blue    = 0x00000004,
-        Orange  = 0x00000008,
-        Black   = 0x00000010,
-        Gray    = 0x00000020,
-        Yellow  = 0x00000040,
-        Magenta = 0x00000080,
-        Cyan    = 0x00000100,
-        Alpha1  = 0x00001000,
-        Alpha075= 0x00002000,
-        Alpha05 = 0x00004000,
-        Alpha025= 0x00008000,
         Pos     = 0x01000000,
         CS      = 0x01000000
     };
@@ -99,6 +87,7 @@ public:
 
     void draw();
 
+    void setColor( const Vector4& color );
     void setLineWidth( T width );
     void setPointSize( T size );
 
@@ -121,8 +110,6 @@ public:
 protected:
     void drawCS( float s );
 
-    Vector4 color( uint32_t flags );
-
     void addGeometry( const std::vector<T> &v, const std::vector<T> &c, uint32_t geometry, size_t layer );
 
     void updateCenter( const std::vector<T> &v );
@@ -136,6 +123,7 @@ protected:
     std::vector<Vector4> m_cs_colors;
 
     // states
+    Vector4 m_color;
     T m_lineWidth;
     T m_pointSize;
 
@@ -152,6 +140,7 @@ protected:
 template <typename T>
 inline plot<T>::plot() :
     widget<T>(),
+    m_color(0,0,0,1),
     m_lineWidth(1),
     m_pointSize(1)
 {
@@ -218,6 +207,13 @@ inline void plot<T>::draw()
 
 
 template <typename T>
+inline void plot<T>::setColor( const Vector4& color )
+{
+    m_color = color;
+}
+
+
+template <typename T>
 inline void plot<T>::setLineWidth( T width )
 {
     m_lineWidth = width;
@@ -240,7 +236,7 @@ inline void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,3,1> > &poin
     std::vector<T> pointsC;
 
     // color
-    Vector4 col = color( flags );
+    Vector4 col = m_color;
 
     for( size_t i=0; i<points.size(); i++ )
     {
@@ -303,21 +299,24 @@ void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint
     std::vector<T> linesC;
 
     // color
-    Vector4 col = color( flags );
+    Vector4 col = m_color;
 
     for( size_t i=0; i<trans.size(); i++ )
     {
-        float fac = 1.0f - 0.75f*( float(i)/float(trans.size()) );
+        // draw the Pos ?
+        if( bool(flags & Pos) )
+        {
+            pointsV.push_back( static_cast<T>( trans[i](12) ) );
+            pointsV.push_back( static_cast<T>( trans[i](13) ) );
+            pointsV.push_back( static_cast<T>( trans[i](14) ) );
 
-        pointsV.push_back( static_cast<T>( trans[i](12) ) );
-        pointsV.push_back( static_cast<T>( trans[i](13) ) );
-        pointsV.push_back( static_cast<T>( trans[i](14) ) );
+            pointsC.push_back( col(0) );
+            pointsC.push_back( col(1) );
+            pointsC.push_back( col(2) );
+            pointsC.push_back( col(3) );
+        }
 
-        pointsC.push_back( col(0) );
-        pointsC.push_back( col(1) );
-        pointsC.push_back( col(2) );
-        pointsC.push_back( col(3) * fac );
-
+        // draw the CS !?
         for( size_t j=0; bool(flags & CS) & (j<m_cs_vertices.size()); j++ )
         {
             Vector4 v( 0.1f*m_cs_vertices[j](0),
@@ -325,11 +324,14 @@ void plot<T>::operator() ( const std::vector<Eigen::Matrix<R,4,4> > &trans, uint
                        0.1f*m_cs_vertices[j](2), 1 );
             v = trans[i].template cast<T>() * v;
 
-            for( size_t k=0; k<3; k++ )
-                linesV.push_back( v(k) / v(3) );
+            linesV.push_back( v(0) / v(3) );
+            linesV.push_back( v(1) / v(3) );
+            linesV.push_back( v(2) / v(3) );
 
-            for( size_t k=0; k<4; k++ )
-                linesC.push_back( m_cs_colors[j](k) * ((k==3) ? fac : 1.0f) );
+            linesC.push_back( m_cs_colors[j](0) );
+            linesC.push_back( m_cs_colors[j](1) );
+            linesC.push_back( m_cs_colors[j](2) );
+            linesC.push_back( m_color(3) );
         }
     }
 
@@ -373,32 +375,6 @@ inline void plot<T>::drawCS( float s )
             nyx::gl::Vertex3( m_cs_vertices[i].data() );
         }
     glEnd();
-}
-
-
-template <typename T>
-inline typename plot<T>::Vector4 plot<T>::color( uint32_t flags )
-{
-    // get the alpha
-    T a = 1;
-    if( flags & Alpha1 ) a = 1;
-    else if( flags & Alpha075 ) a = static_cast<T>(0.75);
-    else if( flags & Alpha05 ) a = static_cast<T>(0.5);
-    else if( flags & Alpha025 ) a = static_cast<T>(0.25);
-
-    // get the color
-    Vector4 col(0,0,0,a);
-    if( flags & Red )         col = Vector4( 1,0,0,a );
-    else if( flags & Green )  col = Vector4( 0,1,0,a );
-    else if( flags & Blue )   col = Vector4( 0,0,1,a );
-    else if( flags & Orange ) col = Vector4( 1,0.5,0,a );
-    else if( flags & Black )  col = Vector4( 0,0,0,a );
-    else if( flags & Gray )   col = Vector4( 0.5,0.5,0.5,a );
-    else if( flags & Yellow )  col = Vector4( 1,1,0,a );
-    else if( flags & Magenta )   col = Vector4( 1,0,1,a );
-    else if( flags & Cyan ) col = Vector4( 0,1,1,a );
-
-    return col;
 }
 
 
