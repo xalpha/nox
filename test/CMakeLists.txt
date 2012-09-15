@@ -21,6 +21,7 @@
 
 # find glut
 find_package( GLUT QUIET )
+
 # if GLUT found
 if( GLUT_FOUND )
 
