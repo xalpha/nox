@@ -116,20 +116,16 @@ void fuzzyAffines()
 
 void alignedAffines()
 {
-    std::vector<Eigen::Matrix4f> trans;
-    trans.reserve(count);
+    s_plot.setColor( Eigen::Vector4f(0,0,0,1) );
+    s_plot.setLineWidth( 1.0 );
     for( size_t i=0; i<count; i++ )
     {
         Eigen::Affine3f t = Eigen::Affine3f::Identity();
         t.rotate(Eigen::Matrix3f::Identity());
         t.translate( 0.5f * Eigen::Vector3f::Random() + Eigen::Vector3f(0.5,0.5,0.5) );
 
-        trans.push_back( t.matrix() );
+        s_plot( t.matrix(), nox::plot<float>::Pos | nox::plot<float>::CS );
     }
-
-    s_plot.setColor( Eigen::Vector4f(0,0,0,1) );
-    s_plot.setLineWidth( 1.0 );
-    s_plot( trans, nox::plot<float>::Pos | nox::plot<float>::CS );
 }
 
 

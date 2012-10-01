@@ -284,7 +284,7 @@ inline void plot<T>::operator() ( const Eigen::Matrix<R,4,4> &trans, uint32_t fl
 {
     std::vector<Eigen::Matrix<R,4,4> > vec;
     vec.push_back( trans );
-    this( vec, flags, layer );
+    operator()( vec, flags, layer );
 }
 
 
