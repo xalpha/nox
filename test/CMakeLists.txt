@@ -27,6 +27,8 @@ if( GLUT_FOUND )
     # set include directories
     include_directories( ${Nox_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIR} )
 
+    message( "Nox_LIBRARIES:${Nox_LIBRARIES}" )
+
     # add test for widget
     set( Nox_Test_widget test_widget )
     add_executable( ${Nox_Test_widget} test_widget.cpp )
