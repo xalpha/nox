@@ -52,6 +52,7 @@ endif()
 
 # find dependencies
 find_package( Eigen3 REQUIRED )
+find_package( GLEW REQUIRED )
 
 # find nyx
 find_package( Nyx QUIET )
@@ -63,7 +64,6 @@ if( NOT ${Nyx_DIR} )
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=$ENV{HOME}/.local )
 endif()
 
-
 # set include directories
 set( Nox_INCLUDE_DIRS
     ${Nox_INCLUDE_DIR}
@@ -73,6 +73,7 @@ set( Nox_INCLUDE_DIRS
 
 # link libraries
 set( Nox_LIBRARIES
+    ${GLEW_LIBRARY}
     ${Nyx_LIBRARIES} CACHE INTERNAL "all libs nox needs" )
 
 # enable C++11 support
@@ -83,6 +84,3 @@ set( Nox_LIBRARIES
 #        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Qunused-arguments")
 #    endif()
 #endif()
-
-
-
