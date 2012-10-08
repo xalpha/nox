@@ -32,6 +32,7 @@ find_path( Nox_INCLUDE_DIR
         nox/widget.hpp
     PATHS
 	    $ENV{Nox_DIR}/include
+	    $ENV{HOME}/.local/include
 	    %{CMAKE_INSTALL_PREFIX}/include
         /usr/include
         /usr/local/include

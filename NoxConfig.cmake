@@ -60,17 +60,16 @@ if( NOT ${Nyx_DIR} )
     include(ExternalProject)
     ExternalProject_Add(Nyx
         GIT_REPOSITORY "https://github.com/xalpha/nyx.git"
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX="$ENV{HOME}/.local" )
-    find_package( Nyx QUIET )
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=$ENV{HOME}/.local )
 endif()
 
 
 # set include directories
 set( Nox_INCLUDE_DIRS
     ${Nox_INCLUDE_DIR}
-    ${Nox_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIR}
-    ${Nyx_INCLUDE_DIRS} CACHE INTERNAL "all include directories nox needs" )
+    $ENV{HOME}/.local/include
+    ${Nyx_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR} CACHE INTERNAL "all include directories nox needs" )
 
 # link libraries
 set( Nox_LIBRARIES
