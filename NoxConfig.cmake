@@ -31,7 +31,7 @@ set( Nox_DIR ${CMAKE_CURRENT_LIST_DIR})
 set( ENV{Nox_DIR} ${Nox_DIR} )
 
 # add module paths
-list( APPEND CMAKE_MODULE_PATH ${Nox_DIR}/cmake ${CMAKE_INSTALL_PREFIX}/share )
+list( APPEND CMAKE_MODULE_PATH ${Nox_DIR}/cmake ${CMAKE_INSTALL_PREFIX}/share ${CMAKE_BINARY_DIR}/extern/share )
 
 # set the include dir
 set( Nox_INCLUDE_DIR "${Nox_DIR}/include")
@@ -52,12 +52,15 @@ find_package( Eigen3 REQUIRED )
 
 # find nyx
 find_package( Nyx QUIET )
-if( NOT ${Nyx_FOUND} )
+if( NOT ${Nyx_DIR} )
     message(STATUS "Nyx not found, pulling from server...")
     include(ExternalProject)
     ExternalProject_Add(Nyx
-        GIT_REPOSITORY "https://github.com/xalpha/nyx.git" )
+        GIT_REPOSITORY "https://github.com/xalpha/nyx.git"
+        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/extern/ )
+    find_package( Nyx QUIET )
 endif()
+
 
 # set include directories
 set( Nox_INCLUDE_DIRS
