@@ -46,4 +46,3 @@ elseif()
     message( WARNING "GLUT not found, tests disabled." )
 endif()
 
-
