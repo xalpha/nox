@@ -129,7 +129,7 @@ template<typename T>
 inline void widget<T>::initialize()
 {
     // init openGL stuff
-    glDisable( GL_DEPTH_TEST );
+    glEnable( GL_DEPTH_TEST );
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_TEXTURE0);
     glEnable( GL_MULTISAMPLE );
