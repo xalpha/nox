@@ -56,7 +56,7 @@ find_package( GLEW REQUIRED )
 
 # find nyx
 find_package( Nyx QUIET )
-if( NOT ${Nyx_DIR} )
+if( NOT ${Nyx_FOUND} )
     message(STATUS "Nyx not found, pulling from server...")
     include(ExternalProject)
     ExternalProject_Add(Nyx
