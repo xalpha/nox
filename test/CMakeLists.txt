@@ -21,13 +21,12 @@
 
 # find glut
 find_package( GLUT QUIET )
+
 # if GLUT found
 if( GLUT_FOUND )
 
     # set include directories
     include_directories( ${Nox_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIR} )
-
-    message( "Nox_LIBRARIES:${Nox_LIBRARIES}" )
 
     # add test for widget
     set( Nox_Test_widget test_widget )
@@ -44,5 +43,4 @@ if( GLUT_FOUND )
 elseif()
     message( WARNING "GLUT not found, tests disabled." )
 endif()
-
 

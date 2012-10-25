@@ -65,7 +65,7 @@ void mousefunc(int button,int state,int x,int y)
 /////
 // Test Plotting functionds
 //
-void fuzzyCube( const Eigen::Vector3f& pos, float size, const Eigen::Vector4f& color, size_t layer )
+void fuzzyCube( const Eigen::Vector3f& pos, float size, const Eigen::Vector4f& color, uint32_t layer )
 {
     std::vector<Eigen::Vector3f> points;
     points.reserve(count);
@@ -73,7 +73,7 @@ void fuzzyCube( const Eigen::Vector3f& pos, float size, const Eigen::Vector4f& c
         points.push_back( size * Eigen::Vector3f::Random() + pos );
 
     s_plot.setColor( color );
-    s_plot( points, nox::plot<float>::Pos | nox::plot<float>::CS, layer );
+    s_plot( points, nox::plot<float>::Pos | nox::plot<float>::CS | layer );
 }
 
 
@@ -164,15 +164,15 @@ int main( int argc, char** argv )
     // plot some stuff
     s_plot.initialize();
     s_plot.setPointSize( 3 );
-    fuzzyCube( Eigen::Vector3f(1,1,0), 0.125, Eigen::Vector4f(1,1,0,1), 4 );
-    fuzzyCube( Eigen::Vector3f(0,1,1), 0.125, Eigen::Vector4f(0,1,1,1), 5 );
-    fuzzyCube( Eigen::Vector3f(1,0,1), 0.125, Eigen::Vector4f(1,0,1,1), 6 );
-    fuzzyCube( Eigen::Vector3f(1,1,1), 0.125, Eigen::Vector4f(1,0.5,0,1), 7 );
+    fuzzyCube( Eigen::Vector3f(1,1,0), 0.125, Eigen::Vector4f(1,1,0,1), nox::plot<float>::Layer4 );
+    fuzzyCube( Eigen::Vector3f(0,1,1), 0.125, Eigen::Vector4f(0,1,1,1), nox::plot<float>::Layer5 );
+    fuzzyCube( Eigen::Vector3f(1,0,1), 0.125, Eigen::Vector4f(1,0,1,1), nox::plot<float>::Layer6 );
+    fuzzyCube( Eigen::Vector3f(1,1,1), 0.125, Eigen::Vector4f(1,0.5,0,1), nox::plot<float>::Layer7 );
     s_plot.setPointSize( 5 );
-    fuzzyCube( Eigen::Vector3f(0,0,0), 0.125, Eigen::Vector4f(0,0,0,1), 0 );
-    fuzzyCube( Eigen::Vector3f(1,0,0), 0.125, Eigen::Vector4f(1,0,0,1), 1 );
-    fuzzyCube( Eigen::Vector3f(0,1,0), 0.125, Eigen::Vector4f(0,1,0,1), 2 );
-    fuzzyCube( Eigen::Vector3f(0,0,1), 0.125, Eigen::Vector4f(0,0,1,1), 3 );
+    fuzzyCube( Eigen::Vector3f(0,0,0), 0.125, Eigen::Vector4f(0,0,0,1), nox::plot<float>::Layer0 );
+    fuzzyCube( Eigen::Vector3f(1,0,0), 0.125, Eigen::Vector4f(1,0,0,1), nox::plot<float>::Layer1 );
+    fuzzyCube( Eigen::Vector3f(0,1,0), 0.125, Eigen::Vector4f(0,1,0,1), nox::plot<float>::Layer2 );
+    fuzzyCube( Eigen::Vector3f(0,0,1), 0.125, Eigen::Vector4f(0,0,1,1), nox::plot<float>::Layer3 );
 
     fuzzyAffines();
     alignedAffines();
